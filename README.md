@@ -4,7 +4,17 @@ A minimal, self-contained lab for AWS IoT Greengrass V2: one Greengrass core act
 
 ## Concept
 
-One container (`core`) runs the full Greengrass V2 Nucleus with four AWS-managed components deployed to it: client device auth, the Moquette MQTT broker, the MQTT Bridge, and the IP detector — all inside a single JVM. This is the only thing in the lab that ever opens an application MQTT session to AWS IoT Core in the cloud. Any number of `client` containers connect only to this local broker over mutual TLS; none of them is allowed to reach AWS IoT Core's MQTT endpoint directly. A client's own AWS IoT identity does not exist before it boots: on first start, it generates its own key pair and CSR, connects briefly to AWS IoT Core with a shared, deliberately low-privilege "claim" certificate, and uses AWS IoT fleet provisioning by claim to get a certificate of its own and register a Thing — with the Thing name, thing-group membership, and IoT policy all decided server-side by a provisioning template, never by the device. No Terraform file, IoT policy, or script in this repo ever names an individual client device: cores are matched by a `lab-gg-core-*` naming convention, clients by `lab-gg-device-*`, and the Greengrass deployment targets a thing group, not a device. The practical result is that the client fleet's size is controlled by exactly one input — the `--scale client=N` count you give `podman compose` — with zero Terraform or IoT Core configuration change required to grow or shrink it.
+One container (`core`) runs the full Greengrass V2 Nucleus with four AWS-managed components deployed to it: client device auth, the Moquette MQTT broker, the MQTT Bridge, and the IP detector — all inside a single JVM. This is the only thing in the lab that ever opens an application MQTT session to AWS IoT Core in the cloud.
+
+Any number of `client` containers connect only to this local broker over mutual TLS. None of them is allowed to reach AWS IoT Core's MQTT endpoint directly.
+
+A client's own AWS IoT identity does not exist before it boots. On first start, it generates its own key pair and CSR, connects briefly to AWS IoT Core with a shared, deliberately low-privilege "claim" certificate, and uses AWS IoT fleet provisioning by claim to get a certificate of its own and register a Thing.
+
+The Thing name, thing-group membership, and IoT policy are all decided server-side by a provisioning template — never by the device itself.
+
+No Terraform file, IoT policy, or script in this repo ever names an individual client device. Cores are matched by a `lab-gg-core-*` naming convention, clients by `lab-gg-device-*`, and the Greengrass deployment targets a thing group, not a device.
+
+The practical result is that the client fleet's size is controlled by exactly one input — the `--scale client=N` count you give `podman compose` — with zero Terraform or IoT Core configuration change required to grow or shrink it.
 
 ## Architecture
 
@@ -91,7 +101,16 @@ terraform -chdir=infra/20-fleet init
 terraform -chdir=infra/20-fleet apply
 ```
 
-This creates the core's Thing/certificate, the claim certificate, the client discovery and claim IoT policies, the provisioning template, the token-exchange role alias, the two thing groups, and deploys the four client-device components (plus the Nucleus) to the core's thing group.
+This creates:
+
+- the core's Thing/certificate
+- the claim certificate
+- the client discovery and claim IoT policies
+- the provisioning template
+- the token-exchange role alias
+- the two thing groups
+
+It also deploys the four client-device components (plus the Nucleus) to the core's thing group.
 
 ### 4. Render the core's local config
 
@@ -135,7 +154,9 @@ scripts/associate.sh
 scripts/verify.sh
 ```
 
-`associate.sh` associates every current member of the `lab-gg-clients` thing group with the core device — `BatchAssociateClientDeviceWithCoreDevice` takes explicit Thing names and has no thing-group form, so this has to run after clients exist. `verify.sh` checks self-registration, identity persistence, local-only client MQTT, targeted message delivery, and the checkable half of core disposability against whatever is actually running and registered.
+`associate.sh` associates every current member of the `lab-gg-clients` thing group with the core device. `BatchAssociateClientDeviceWithCoreDevice` takes explicit Thing names and has no thing-group form, so this has to run after clients exist.
+
+`verify.sh` checks self-registration, identity persistence, local-only client MQTT, targeted message delivery, and the checkable half of core disposability against whatever is actually running and registered.
 
 ### Scaling the fleet
 
@@ -147,7 +168,11 @@ scripts/associate.sh
 scripts/verify.sh
 ```
 
-Existing replicas keep their stored identity (their certificate lives on the shared `lab-gg-clients-data` volume, keyed by the container's hostname/serial) — only the new replicas provision. Do not run `--force-recreate` on replicas that have already provisioned: a recreated container gets a new random hostname, looks like a brand-new device, and provisions a second Thing while orphaning the old one in the registry. `podman restart` or `podman start` on an existing replica is safe and reuses its identity.
+Existing replicas keep their stored identity (their certificate lives on the shared `lab-gg-clients-data` volume, keyed by the container's hostname/serial) — only the new replicas provision.
+
+Do not run `--force-recreate` on replicas that have already provisioned: a recreated container gets a new random hostname, looks like a brand-new device, and provisions a second Thing while orphaning the old one in the registry.
+
+`podman restart` or `podman start` on an existing replica is safe and reuses its identity.
 
 ### Teardown
 
@@ -162,15 +187,18 @@ terraform -chdir=infra/20-fleet destroy
 ## What this deliberately does not include
 
 - No CloudWatch integration: the token-exchange IAM policy grants only `s3:GetBucketLocation` (for resolving component artifacts) and deliberately omits the `logs:*` actions AWS's own default token-exchange policy includes, because the Log Manager component is never deployed.
-- No IoT Rules Engine — nothing routes or transforms messages in the cloud; the only cloud-side routing is the MQTT Bridge's fixed topic mapping.
+- No IoT Rules Engine — nothing routes or transforms messages in the cloud. The only cloud-side routing is the MQTT Bridge's fixed topic mapping.
 - No custom Greengrass components or IPC — the deployment only installs AWS-managed components (Nucleus, client device auth, Moquette, MQTT Bridge, IP detector).
 - No application-level device shadow usage. The core's IoT policy grants some shadow-topic access, but that's Greengrass's own internal connectivity-info shadow, not a shadow feature exposed to client devices.
 - No certificate rotation — `gen-core-csr.sh` and `gen-claim-csr.sh` refuse to overwrite an existing key unless you pass `--force`, and nothing automates re-issuing a certificate on a schedule.
-- No second core or failover — the core Thing name (`lab-gg-core-01`) and the `core` Compose service are both singular; the wildcard naming convention (`lab-gg-core-*`) is there so a second core could be added by hand later, not because one exists today.
+- No second core or failover — the core Thing name (`lab-gg-core-01`) and the `core` Compose service are both singular.
+- The wildcard naming convention (`lab-gg-core-*`) is there so a second core could be added by hand later, not because one exists today.
 - No host-exposed port — `local/compose.yaml` never publishes Moquette's 8883; it's reachable only from the `lab-gg-net` bridge network.
 
 ## Security notes
 
-- Every private key in this lab (core, claim, and each client's own device key) is generated locally by OpenSSL — `gen-core-csr.sh`, `gen-claim-csr.sh`, and each client's `entrypoint.sh` — and never leaves the machine or container that generated it. Terraform only ever receives and signs a CSR (`aws_iot_certificate` with a `csr` argument); no private key passes through Terraform state.
+- Every private key in this lab (core, claim, and each client's own device key) is generated locally by OpenSSL — `gen-core-csr.sh`, `gen-claim-csr.sh`, and each client's `entrypoint.sh` — and never leaves the machine or container that generated it.
+- Terraform only ever receives and signs a CSR (`aws_iot_certificate` with a `csr` argument). No private key passes through Terraform state.
 - `certs/` (core and claim keys) is gitignored, as are the generated `config/config.yaml` and `client.env`.
-- No static AWS credential is ever placed inside a container. The core exchanges its X.509 certificate for temporary AWS credentials at runtime via the IoT Greengrass token-exchange role alias (`infra/20-fleet/token-exchange.tf`); client containers never hold AWS credentials at all, only IoT certificates.
+- No static AWS credential is ever placed inside a container. The core exchanges its X.509 certificate for temporary AWS credentials at runtime via the IoT Greengrass token-exchange role alias (`infra/20-fleet/token-exchange.tf`).
+- Client containers never hold AWS credentials at all, only IoT certificates.
