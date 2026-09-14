@@ -13,7 +13,7 @@ query="$(cat)"
 region="$(echo "$query" | jq -r '.region')"
 policy_name="$(echo "$query" | jq -r '.policy_name')"
 
-document="$(/usr/local/bin/aws iot get-policy \
+document="$(aws iot get-policy \
   --region "$region" \
   --policy-name "$policy_name" \
   --query 'policyDocument' \

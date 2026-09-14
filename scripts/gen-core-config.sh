@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 # Generates the (Greengrass) core's config/config.yaml from infra/20-fleet's
-# live Terraform outputs, per the plan's explicit instruction: "Do not
-# hand-copy endpoint hostnames into a static file. Read them from the layer
-# that owns them" (04_smallsteps/03-run-the-core-container.md). Safe to
-# re-run any time those outputs might have changed; it only ever overwrites
+# live Terraform outputs, instead of hand-copying endpoint hostnames into a
+# static file. Safe to re-run any time those outputs might have changed;
+# it only ever overwrites
 # config/config.yaml and client.env at the repo root, never Terraform state
 # or any cloud resource.
 #

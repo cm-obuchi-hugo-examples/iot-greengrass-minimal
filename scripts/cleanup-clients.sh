@@ -8,13 +8,10 @@
 # destroy` alone would leave them behind. No client Thing name is ever
 # written into this script.
 #
-# aws is aliased to a 1Password shell plugin in this environment that fails
-# non-interactively; always call the absolute binary, never the bare `aws`.
-#
 # Usage: scripts/cleanup-clients.sh
 set -euo pipefail
 
-AWS=/usr/local/bin/aws
+AWS=aws
 REGION="ap-northeast-1"
 GROUP="lab-gg-clients" # the fleet's thing group; fixed, not a per-device name
 

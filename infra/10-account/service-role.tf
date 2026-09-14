@@ -66,7 +66,7 @@ resource "terraform_data" "service_role_association" {
   triggers_replace = [aws_iam_role.greengrass_service[0].arn]
 
   provisioner "local-exec" {
-    command = "/usr/local/bin/aws greengrassv2 associate-service-role-to-account --role-arn ${aws_iam_role.greengrass_service[0].arn} --region ${var.region}"
+    command = "aws greengrassv2 associate-service-role-to-account --role-arn ${aws_iam_role.greengrass_service[0].arn} --region ${var.region}"
   }
 
   # Only tears down the association this apply created. A role this layer
@@ -74,7 +74,7 @@ resource "terraform_data" "service_role_association" {
   # otherwise.
   provisioner "local-exec" {
     when       = destroy
-    command    = "/usr/local/bin/aws greengrassv2 disassociate-service-role-from-account --region ${self.output}"
+    command    = "aws greengrassv2 disassociate-service-role-from-account --region ${self.output}"
     on_failure = continue
   }
 

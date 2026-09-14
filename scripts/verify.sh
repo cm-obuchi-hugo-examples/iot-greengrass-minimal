@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# One function per claim in the plan's "Minimal verification" table
-# (04-greengrass-v2.md). Contains no client device name or count literal:
-# it discovers what is running from `podman ps` and what is registered from
-# the live AWS IoT registry, the same way associate.sh does. This script
-# must be byte-identical whether 3 or 25 clients exist — that repeat run is
-# claim 5 (dynamism).
+# One function per claim this lab makes (see README.md). Contains no
+# client device name or count literal: it discovers what is running from
+# `podman ps` and what is registered from the live AWS IoT registry, the
+# same way associate.sh does. This script must be byte-identical whether 3
+# or 25 clients exist — that repeat run is claim 5 (dynamism).
 #
 # Deliberately no `set -e`: a single failed assertion must not abort the
 # rest of the run, or a script that stops at the first FAIL would print
@@ -13,16 +12,13 @@
 # Claim 6 (core disposability) is only partially checkable here (registry
 # status, volume presence) without doing the destructive recreate itself;
 # the full test — stop, rm, recreate, compare certificate ARN — is a manual
-# procedure, not something this script triggers on its own. See
-# 04_smallsteps/06-verify-scale-and-teardown.md, section 3.
-#
-# aws is aliased to a 1Password shell plugin in this environment that fails
-# non-interactively; always call the absolute binary, never the bare `aws`.
+# teardown/recreate procedure, not something this script triggers on its
+# own.
 #
 # Usage: scripts/verify.sh
 set -uo pipefail
 
-AWS=/usr/local/bin/aws
+AWS=aws
 REGION="ap-northeast-1"
 CORE="lab-gg-core-01"  # the (Greengrass) core device; singular, fixed (Appendix A)
 GROUP="lab-gg-clients" # the fleet's thing group; fixed, not a per-device name
@@ -156,9 +152,9 @@ claim3_direct_connection_refused() {
   # (instead of going through the core) must be refused. Exercising this
   # needs a client image and one device's own stored certificate, and its
   # point is to observe an authorization failure, not to assert one
-  # blindly — see 04_smallsteps/06-verify-scale-and-teardown.md, section 2,
-  # for the exact manual procedure and the failure to look for.
-  echo "SKIP  direct cloud MQTT refusal: run manually per 06-verify-scale-and-teardown.md section 2"
+  # blindly — see README.md's teardown/verification notes for the exact
+  # manual procedure and the failure to look for.
+  echo "SKIP  direct cloud MQTT refusal: run manually, see README.md"
 }
 
 # ---------------------------------------------------------------------------
@@ -224,7 +220,7 @@ claim5_dynamism() {
 # ---------------------------------------------------------------------------
 # Claim 6 — core disposability: only the non-destructive, checkable subset.
 # The full test (stop, rm, recreate, compare certificate ARN) is a manual
-# procedure — see 04_smallsteps/06-verify-scale-and-teardown.md, section 3.
+# procedure, not something this script triggers on its own.
 # ---------------------------------------------------------------------------
 claim6_core_disposability_checkable_subset() {
   echo "--- claim 6: core disposability (checkable subset) ---"

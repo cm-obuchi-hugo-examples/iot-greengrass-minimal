@@ -18,7 +18,7 @@ region="$(echo "$query" | jq -r '.region')"
 # roleArn) when nothing is associated yet; it does not necessarily fail. It
 # can also fail outright (e.g. ResourceNotFoundException on some accounts).
 # Treat both as "nothing associated".
-role_arn="$(/usr/local/bin/aws greengrassv2 get-service-role-for-account \
+role_arn="$(aws greengrassv2 get-service-role-for-account \
   --region "$region" \
   --query 'roleArn' \
   --output text 2>/dev/null)" || role_arn=""

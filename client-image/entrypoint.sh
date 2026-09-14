@@ -1,8 +1,7 @@
 #!/bin/sh
 # Idempotent client entrypoint: provision once, then discover-and-connect
-# forever (with backoff). See research-plans/04_greengrass/04_smallsteps/
-# 05-self-provisioning-client-fleet.md, section 3, for the design this
-# implements.
+# forever (with backoff). See README.md's "Concept" section for the design
+# this implements.
 #
 # SERIAL falls back to the container's own hostname, so this image works
 # unmodified whether SERIAL is set explicitly (a manual `podman run --env

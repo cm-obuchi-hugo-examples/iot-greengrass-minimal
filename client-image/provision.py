@@ -13,9 +13,8 @@ connection. The Thing name, thing-group membership, and IoT policy are all
 decided by lab-gg-client-template on the server side, not by this script —
 see infra/20-fleet/provisioning-template.tf.
 
-Design reference: research-plans/04_greengrass/04_smallsteps/
-05-self-provisioning-client-fleet.md, section 2. Invoked by entrypoint.sh,
-once, only when no stored identity exists yet for this device's serial.
+Invoked by entrypoint.sh, once, only when no stored identity exists yet
+for this device's serial.
 """
 import argparse
 import concurrent.futures

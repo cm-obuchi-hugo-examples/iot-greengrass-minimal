@@ -13,7 +13,7 @@ region="$(echo "$query" | jq -r '.region')"
 thing_name="$(echo "$query" | jq -r '.thing_name')"
 thing_group_name="$(echo "$query" | jq -r '.thing_group_name')"
 
-members="$(/usr/local/bin/aws iot list-things-in-thing-group \
+members="$(aws iot list-things-in-thing-group \
   --region "$region" \
   --thing-group-name "$thing_group_name" \
   --query 'things' \

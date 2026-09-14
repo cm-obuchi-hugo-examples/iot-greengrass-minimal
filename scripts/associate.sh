@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 # Associates every current member of lab-gg-clients with the (Greengrass)
 # core device, so a self-provisioned client can complete cloud discovery.
-# This is the plan's "one gap": BatchAssociateClientDeviceWithCoreDevice
-# takes explicit Thing names and has no thing-group form (see
-# 04-greengrass-v2.md, "The one gap: association"). Reads the live registry
-# to decide what to associate, so it is unchanged whether 3 or 25 clients
-# exist; no client Thing name is ever written into this script.
-#
-# aws is aliased to a 1Password shell plugin in this environment that fails
-# non-interactively; always call the absolute binary, never the bare `aws`.
+# BatchAssociateClientDeviceWithCoreDevice takes explicit Thing names and
+# has no thing-group form, so this is the one operation AWS offers no
+# declarative path for. Reads the live registry to decide what to
+# associate, so it is unchanged whether 3 or 25 clients exist; no client
+# Thing name is ever written into this script.
 #
 # Usage: scripts/associate.sh
 set -euo pipefail
 
-AWS=/usr/local/bin/aws
+AWS=aws
 REGION="ap-northeast-1"
 CORE="lab-gg-core-01"  # the (Greengrass) core device; singular, fixed (Appendix A)
 GROUP="lab-gg-clients" # the fleet's thing group; fixed, not a per-device name
