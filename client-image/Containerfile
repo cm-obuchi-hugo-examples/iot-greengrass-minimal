@@ -1,0 +1,29 @@
+# Build context MUST be client-image/ only (see local/compose.yaml's
+# `build: context: ../client-image`). Do not change the context to the repo
+# root or to $LAB_DIR: certs/ (the core's key and the shared claim key)
+# lives there, and this image must never be able to see either — even
+# read access during a build stage would be enough to bake a key into a
+# layer. This image ships with no certificate at all, which is what makes
+# it safe to share or rebuild freely.
+FROM python:3.11-slim
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+RUN python3 -m pip install --disable-pip-version-check --no-cache-dir \
+      awsiotsdk==1.31.0
+
+# aws-iot-device-sdk-python-v2/ is cloned by the user next to this
+# Containerfile (git clone --depth 1 --branch v1.31.0 ...), matching
+# .gitignore's client-image/aws-iot-device-sdk-python-v2/ entry. This build
+# never fetches it itself.
+COPY aws-iot-device-sdk-python-v2/samples/greengrass/basic_discovery.py /app/
+COPY provision.py /app/
+COPY entrypoint.sh /app/
+
+RUN chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

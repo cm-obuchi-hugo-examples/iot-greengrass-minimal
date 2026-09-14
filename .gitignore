@@ -21,7 +21,9 @@ override.tf.json
 aws-greengrass-docker/
 client-image/aws-iot-device-sdk-python-v2/
 
-# Local environment
-greengrass.env
+# Local environment — generated per-account by scripts/gen-core-config.sh,
+# never hand-copied. greengrass.env itself is static (no secrets, no
+# endpoint) and stays checked in.
+client.env
 config/config.yaml
 .DS_Store
