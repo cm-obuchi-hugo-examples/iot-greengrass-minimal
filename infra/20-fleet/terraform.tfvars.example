@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (gitignored) and adjust if your certs/ layout
+# differs from what scripts/gen-core-csr.sh and scripts/gen-claim-csr.sh
+# produce by default.
+
+core_csr_path  = "../../certs/lab-gg-core-01/device.csr"
+claim_csr_path = "../../certs/claim/claim.csr"
