@@ -1,0 +1,27 @@
+# Private keys, CSRs, and certificates. Never commit any of this.
+certs/
+*.pem.key
+*.pem.crt
+*.csr
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Upstream sources cloned during the hands-on
+aws-greengrass-docker/
+client-image/aws-iot-device-sdk-python-v2/
+
+# Local environment
+greengrass.env
+config/config.yaml
+.DS_Store
