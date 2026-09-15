@@ -24,9 +24,9 @@ import sys
 from awscrt import mqtt
 from awsiot import iotidentity, mqtt_connection_builder
 
-# Fixed lab constants (see the plan's Appendix A). Every client uses the
-# same provisioning template and mounts the same read-only claim identity
-# at these fixed paths (local/compose.yaml: "../certs/claim:/claim:ro").
+# Fixed lab constants. Every client uses the same provisioning template and
+# mounts the same read-only claim identity at these fixed paths
+# (local/compose.yaml: "../certs/claim:/claim:ro").
 TEMPLATE_NAME = "lab-gg-client-template"
 CLAIM_CERT_PATH = "/claim/claim.pem.crt"
 CLAIM_KEY_PATH = "/claim/private.pem.key"

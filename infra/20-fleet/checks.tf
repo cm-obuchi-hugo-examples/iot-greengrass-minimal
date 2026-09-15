@@ -1,7 +1,7 @@
-# Cloud-side halves of two of the plan's six minimal-verification claims
-# (see "Minimal verification" in the plan). Data sources live inside each
-# `check` block, not at module scope, so a failed lookup becomes a check
-# failure rather than blocking the whole plan/apply.
+# Cloud-side halves of two of this lab's six minimal-verification claims
+# (see README.md). Data sources live inside each `check` block, not at
+# module scope, so a failed lookup becomes a check failure rather than
+# blocking the whole plan/apply.
 
 # Claim 1 — self-registration: "a device that never existed creates its own
 # Thing and certificate, lands in lab-gg-clients, with no human action." The

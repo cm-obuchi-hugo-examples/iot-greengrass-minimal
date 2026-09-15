@@ -17,8 +17,9 @@ resource "aws_iam_role" "token_exchange" {
 # Deliberately narrower than AWS's own default token-exchange policy
 # (GreengrassV2TokenExchangeRoleAccess), which also grants logs:CreateLogGroup,
 # logs:CreateLogStream, logs:PutLogEvents, and logs:DescribeLogStreams. This
-# lab has no CloudWatch Logs and never deploys the Log Manager component (see
-# the plan's non-goals), so those actions would be unused permissions with no
+# lab has no CloudWatch Logs and never deploys the Log Manager component
+# (deliberately out of scope for this lab), so those actions would be
+# unused permissions with no
 # corresponding component to use them. s3:GetBucketLocation alone is what
 # supports resolving public component artifacts for this deployment.
 resource "aws_iam_policy" "token_exchange" {

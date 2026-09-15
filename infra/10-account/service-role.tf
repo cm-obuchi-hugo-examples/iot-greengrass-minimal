@@ -20,9 +20,9 @@ locals {
   greengrass_service_role_exists = data.external.greengrass_service_role.result.role_arn != ""
 }
 
-# Created ONLY if no service role is associated with this account+Region yet.
-# See Appendix A of the plan: "Greengrass service role — lab-gg-service-role
-# (only if none exists)".
+# Created ONLY if no service role is associated with this account+Region yet
+# — the association is a shared, account-level singleton, and this layer
+# reuses whatever is already there rather than ever creating a second one.
 resource "aws_iam_role" "greengrass_service" {
   count = local.greengrass_service_role_exists ? 0 : 1
 

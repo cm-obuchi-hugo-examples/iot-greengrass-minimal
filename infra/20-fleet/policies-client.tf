@@ -13,9 +13,9 @@ locals {
 #
 # The wildcard is deliberate, not a placeholder for
 # ${iot:Connection.Thing.ThingName}: discovery is an HTTPS call, not an MQTT
-# connection, so the connection-scoped policy variable may not substitute
-# there at all (open question 1 in the plan). The wildcard is correct either
-# way and is attached by the provisioning template below, not by a
+# connection, so it's untested whether that connection-scoped policy variable
+# even substitutes there. The wildcard is correct either way, and is attached
+# by the provisioning template below, not by a
 # Terraform attachment resource, because the certificate it attaches to
 # does not exist until a device creates it.
 resource "aws_iot_policy" "client_discovery" {

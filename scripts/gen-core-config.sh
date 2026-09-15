@@ -63,9 +63,9 @@ services:
 YAML
 
 # Consumed by local/compose.yaml's `client` service via `env_file:
-# ../client.env`. AWS_REGION is not written here: it is one of the plan's
-# fixed lab constants (Appendix A), not an account-specific value Terraform
-# owns, so it is set directly in local/compose.yaml instead.
+# ../client.env`. AWS_REGION is not written here: it is a fixed lab
+# constant, not an account-specific value Terraform owns, so it is set
+# directly in local/compose.yaml instead.
 cat >"$REPO_ROOT/client.env" <<ENV
 IOT_DATA_ENDPOINT=${DATA_EP}
 ENV

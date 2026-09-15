@@ -1,14 +1,13 @@
 # The three core IoT policies. All three attach to the one core certificate;
 # AWS evaluates their union. The three-way split is for a human to read which
-# permission serves which purpose (Nucleus/MQTT Bridge runtime, client
-# device auth, MQTT Bridge relay) — see the plan's "Identity is not the same
-# as container" section.
+# permission serves which purpose: lab-gg-core-runtime (Nucleus/MQTT Bridge
+# cloud runtime), lab-gg-core-client-auth (verifying client devices),
+# lab-gg-core-bridge (relaying application topics).
 #
-# Deviation from the hands-on manual's HCL sketch (01-cloud-foundation-and-
-# core-identity.md): that sketch uses ${iot:Connection.Thing.ThingName} in
-# these two policies so a single core policy would read as correct for any
-# future core. AWS IoT's own docs rule that out for policies attached to a
-# Greengrass core device:
+# ${iot:Connection.Thing.ThingName} is deliberately NOT used here, even
+# though it would let a single core policy read as correct for any future
+# core. AWS IoT's own docs rule it out for policies attached to a Greengrass
+# core device:
 #
 #   "Thing policy variables (iot:Connection.Thing.*) aren't supported ... in
 #   AWS IoT policies for core devices or Greengrass data plane operations.
@@ -19,9 +18,9 @@
 # AWS's own published "minimal AWS IoT policy for core devices" example uses
 # a literal thing name with a trailing wildcard for exactly this reason
 # (e.g. "client/core-device-thing-name*"), not the connection variable. This
-# file follows that guidance and keeps the plan's stated goal — a policy
-# that reads as correct for any future core, not just lab-gg-core-01 — using
-# the AWS-recommended mechanism: a wildcard over the lab-gg-core-* naming
+# file follows that guidance to get the same result — a policy that reads
+# as correct for any future core, not just lab-gg-core-01 — using the
+# AWS-recommended mechanism: a wildcard over the lab-gg-core-* naming
 # convention (local.core_thing_name_pattern, defined in main.tf), the same
 # way client Things are matched by lab-gg-device-*.
 resource "aws_iot_policy" "core_runtime" {
