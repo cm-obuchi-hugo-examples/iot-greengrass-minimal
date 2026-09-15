@@ -154,6 +154,8 @@ scripts/verify.sh
 
 `verify.sh` checks self-registration, identity persistence, local-only client MQTT, targeted message delivery, and the checkable half of core disposability against whatever is actually running and registered.
 
+To watch the client → core → AWS IoT Core path live instead of through `verify.sh`'s assertions: subscribe to `lab/greengrass/devices/+/telemetry` in the AWS IoT Console's MQTT test client. Every client publishes `"<thing name> ticking time: <timestamp>"` there once a minute (`client.py`), relayed by the MQTT Bridge — each message that arrives is proof the full chain worked. `podman logs -f <client container>` shows the same publishes (and any commands received) from the client's side.
+
 ### Scaling the fleet
 
 Re-run step 6 with a larger count, then re-run association and verification:
