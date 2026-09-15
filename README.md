@@ -55,7 +55,7 @@ Every message a client sends or receives afterward (telemetry out, commands in) 
 | Path | Contents |
 |---|---|
 | `infra/10-account/` | Account-wide, rarely-changing resources: the IAM role AWS IoT assumes to run fleet provisioning (`lab-gg-provisioning-role`), and the Greengrass service-role-to-account association — created only if the account+Region doesn't already have one, since that association is a shared, account-level singleton. |
-| `infra/20-fleet/` | Everything that changes per lab iteration: the core's Thing/certificate, the shared claim certificate and its policy, the client discovery policy, the fleet provisioning template, the token-exchange role/role alias, the thing groups, the Greengrass V2 deployment (Nucleus + the four client-device components), and Terraform `check` blocks that verify two of the lab's claims against the live registry. |
+| `infra/20-fleet/` | Everything that changes per lab iteration: the core's Thing/certificate, the shared claim certificate and its policy, the client discovery policy, the fleet provisioning template, the token-exchange role/role alias, the thing groups, the Greengrass V2 deployment (the Nucleus plus AWS's "client device" component family — all five run on the core, not on a client), and Terraform `check` blocks that verify two of the lab's claims against the live registry. |
 | `local/compose.yaml` | The Podman Compose runtime definition: one `core` service, one `client` service meant to be scaled, one bridge network, two named volumes. |
 | `greengrass.env` | Static Nucleus environment variables for the core container (no secrets, no per-account values — checked into git). |
 | `client-image/` | The self-provisioning client: `Containerfile`, `provision.py` (the fleet-provisioning-by-claim logic), `entrypoint.sh` (idempotent provision-once-then-discover-forever logic). |
@@ -110,7 +110,7 @@ This creates:
 - the token-exchange role alias
 - the two thing groups
 
-It also deploys the four client-device components (plus the Nucleus) to the core's thing group.
+It also deploys five components to the core's thing group — the Nucleus, plus AWS's "client device" component family (client device auth, Moquette, MQTT Bridge, IP detector). All five run on the core container itself; "client device" here is AWS's name for the category of component that lets the core authenticate and talk to client devices, not something installed on a client.
 
 ### 4. Render the core's local config
 
