@@ -58,7 +58,7 @@ Every message a client sends or receives afterward (telemetry out, commands in) 
 | `infra/20-fleet/` | Everything that changes per lab iteration: the core's Thing/certificate, the shared claim certificate and its policy, the client discovery policy, the fleet provisioning template, the token-exchange role/role alias, the thing groups, the Greengrass V2 deployment (the Nucleus plus AWS's "client device" component family — all five run on the core, not on a client), and Terraform `check` blocks that verify two of the lab's claims against the live registry. |
 | `local/compose.yaml` | The Podman Compose runtime definition: one `core` service, one `client` service meant to be scaled, one bridge network, two named volumes. |
 | `greengrass.env` | Static Nucleus environment variables for the core container (no secrets, no per-account values — checked into git). |
-| `client-image/` | The self-provisioning client: `Containerfile`, `provision.py` (the fleet-provisioning-by-claim logic), `entrypoint.sh` (idempotent provision-once-then-discover-forever logic). |
+| `client-image/` | The self-provisioning client: `Containerfile`, `provision.py` (the fleet-provisioning-by-claim logic, run once), `client.py` (discovers the core, connects over local mTLS, then runs forever: subscribes to this device's commands and publishes a telemetry heartbeat every 60 seconds), `entrypoint.sh` (idempotent — provisions only if no stored identity exists yet, then runs `client.py` under a retry-with-backoff loop). |
 | `scripts/` | `gen-core-csr.sh` / `gen-claim-csr.sh` (generate keys+CSRs locally), `gen-core-config.sh` (renders the core's `config.yaml` from live Terraform outputs), `associate.sh` (associates every current client Thing with the core device — the one operation with no thing-group form), `verify.sh` (checks the lab's claims against the running containers and the live registry), `cleanup-clients.sh` (deletes self-provisioned client Things Terraform never tracked), and three `check-*.sh` read-only scripts consumed by Terraform's `external`/`check` data sources. |
 
 ## Prerequisites
@@ -120,18 +120,14 @@ scripts/gen-core-config.sh
 
 Reads `infra/20-fleet`'s Terraform outputs (endpoints, thing name, role alias) and writes `config/config.yaml` (mounted read-only into the core container) and `client.env` (the client containers' `IOT_DATA_ENDPOINT`). Both are gitignored; re-run this any time those outputs change.
 
-### 5. Clone the two upstream sources the images build from
+### 5. Clone the upstream source the core image builds from
 
 ```bash
 git clone https://github.com/aws-greengrass/aws-greengrass-docker.git
 git -C aws-greengrass-docker checkout c84c544ddbf854cbdd1798b1a4ace6af510a1bec
-
-git clone --depth 1 --branch v1.31.0 \
-  https://github.com/aws/aws-iot-device-sdk-python-v2.git \
-  client-image/aws-iot-device-sdk-python-v2
 ```
 
-`aws-greengrass-docker` is cloned at the repo root (`local/compose.yaml` builds the `core` image from `../aws-greengrass-docker` with `GREENGRASS_RELEASE_VERSION` matching the Nucleus version pinned in `infra/20-fleet/deployment.tf`). `aws-iot-device-sdk-python-v2` is cloned under `client-image/` at the tag matching the `awsiotsdk` version pinned in `client-image/Containerfile`. Both paths are gitignored.
+Cloned at the repo root — `local/compose.yaml` builds the `core` image from `../aws-greengrass-docker` with `GREENGRASS_RELEASE_VERSION` matching the Nucleus version pinned in `infra/20-fleet/deployment.tf`. This path is gitignored. The client image needs no such clone: it only depends on the `awsiotsdk` package installed via pip in `client-image/Containerfile`, and all of its logic (`provision.py`, `client.py`, `entrypoint.sh`) already lives in this repo.
 
 ### 6. Start the fleet
 

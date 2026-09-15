@@ -16,12 +16,8 @@ WORKDIR /app
 RUN python3 -m pip install --disable-pip-version-check --no-cache-dir \
       awsiotsdk==1.31.0
 
-# aws-iot-device-sdk-python-v2/ is cloned by the user next to this
-# Containerfile (git clone --depth 1 --branch v1.31.0 ...), matching
-# .gitignore's client-image/aws-iot-device-sdk-python-v2/ entry. This build
-# never fetches it itself.
-COPY aws-iot-device-sdk-python-v2/samples/greengrass/basic_discovery.py /app/
 COPY provision.py /app/
+COPY client.py /app/
 COPY entrypoint.sh /app/
 
 RUN chmod +x /app/entrypoint.sh

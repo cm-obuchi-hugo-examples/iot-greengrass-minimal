@@ -33,31 +33,30 @@ else
     --out "$DIR/device.pem.crt"
 fi
 
-# A device can boot before scripts/associate.sh has run, so discovery
-# retries with exponential backoff (5s, doubling, capped at 60s) instead of
-# failing once and staying down.
+# A device can boot before scripts/associate.sh has run, and the local
+# connection can be lost at any point after that (core restart, network
+# blip, the core's own local IP changing). client.py is meant to run
+# forever once connected — it only ever exits (non-zero) on a failed
+# discovery, a failed initial connection, or a lost connection, and
+# deliberately does not retry or resubscribe on its own (see client.py's
+# module docstring). So every exit, for any reason, is retried here from
+# scratch (fresh discovery included) with exponential backoff (5s,
+# doubling, capped at 60s).
 delay=5
 while true; do
-  if python3 -u /app/basic_discovery.py \
+  if python3 -u /app/client.py \
       --thing_name "$THING" \
-      --topic "lab/greengrass/devices/${THING}/commands" \
-      --message "hello from ${THING}" \
-      --mode both \
-      --ca_file /claim/AmazonRootCA1.pem \
       --cert "$DIR/device.pem.crt" \
       --key "$DIR/private.pem.key" \
+      --ca_file /claim/AmazonRootCA1.pem \
       --region "${AWS_REGION:-ap-northeast-1}"
   then
-    break
+    echo "client.py exited 0 (unexpected — it's meant to run forever)"
+  else
+    echo "client.py exited non-zero"
   fi
-  echo "discovery or local connect failed; retrying in ${delay}s"
+  echo "retrying in ${delay}s"
   sleep "$delay"
   delay=$((delay * 2))
   [ "$delay" -gt 60 ] && delay=60
 done
-
-# If this SDK version's basic_discovery.py sample rejects --mode both,
-# publish once with --mode publish and then re-exec with --mode subscribe
-# instead — never run two processes under one Thing name at once: both use
-# it as the MQTT client ID, and Moquette disconnects whichever session
-# connected first.
