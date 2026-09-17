@@ -18,30 +18,7 @@ The practical result is that the client fleet's size is controlled by exactly on
 
 ## Architecture
 
-```
-                          AWS IoT Core / Greengrass V2 (cloud)
-                                      |
-                  (1) claim MQTT, first boot only, 2 topics only
-                  (2) HTTPS greengrass:Discover, every boot
-                  (3) core's own MQTT session (Nucleus, jobs, shadow-for-
-                      connectivity-info, deployments) -- persistent
-                                      |
-        +-----------------------------+-----------------------------+
-        |                                                           |
-   [ core container ]                                       (nothing else
-   Nucleus + client device                                   ever connects
-   auth + Moquette broker +                                   to the cloud
-   MQTT Bridge + IP detector                                  MQTT endpoint)
-   one JVM, one cert (lab-gg-core-01)
-        |
-        | local mTLS (10.89.40.0/24, no host-exposed port)
-        |
-   +----+----+----+---- ... ---+
-   |    |    |    |            |
- client client client  ...   client        <- N containers, each with its
- (own cert + Thing,           own private key + cert, never shared
-  lab-gg-device-<serial>)
-```
+![Architecture](docs/architecture-overview.drawio.png)
 
 Two distinct client-side credentials exist, and only one of them ever touches the cloud on an ongoing basis:
 
