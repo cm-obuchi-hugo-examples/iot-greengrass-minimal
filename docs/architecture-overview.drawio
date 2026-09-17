@@ -1,0 +1,81 @@
+<mxGraphModel adaptiveColors="auto">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="edge_layer" value="Connections" parent="0" />
+    <mxCell id="shape_layer" value="Shapes" parent="0" />
+
+    <mxCell id="title" value="Architecture" style="text;html=1;fontSize=20;fontStyle=1;fontColor=#232F3E;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="40" y="10" width="600" height="34" as="geometry" />
+    </mxCell>
+
+    <mxCell id="cloud_icon1" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.iot_core;" vertex="1" parent="shape_layer">
+      <mxGeometry x="440" y="90" width="70" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="cloud_icon2" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.greengrass;" vertex="1" parent="shape_layer">
+      <mxGeometry x="540" y="90" width="70" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="cloud_label" value="AWS IoT Core / Greengrass V2 (cloud)" style="text;html=1;fontSize=17;fontStyle=1;fontColor=#232F3E;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="365" y="170" width="320" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="channels_text" value="(1) claim MQTT, first boot only, 2 topics only&#10;(2) HTTPS greengrass:Discover, every boot&#10;(3) core's own persistent MQTT session (Nucleus,&#10;    jobs, shadow-for-connectivity-info, deployments)" style="text;html=1;fontSize=16;fontColor=#232F3E;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="650" y="230" width="560" height="110" as="geometry" />
+    </mxCell>
+
+    <mxCell id="direct_note" value="(nothing else ever connects&#10;to the cloud MQTT endpoint)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;dashed=1;fontSize=15;fontColor=#666666;align=center;verticalAlign=middle;spacing=8;" vertex="1" parent="shape_layer">
+      <mxGeometry x="650" y="360" width="420" height="80" as="geometry" />
+    </mxCell>
+
+    <mxCell id="core_icon" value="" style="sketch=0;points=[[0,0,0],[0.25,0,0],[0.5,0,0],[0.75,0,0],[1,0,0],[0,1,0],[0.25,1,0],[0.5,1,0],[0.75,1,0],[1,1,0],[0,0.25,0],[0,0.5,0],[0,0.75,0],[1,0.25,0],[1,0.5,0],[1,0.75,0]];outlineConnect=0;fontColor=#232F3E;fillColor=#7AA116;strokeColor=#ffffff;dashed=0;html=1;aspect=fixed;shape=mxgraph.aws4.resourceIcon;resIcon=mxgraph.aws4.greengrass;" vertex="1" parent="shape_layer">
+      <mxGeometry x="485" y="430" width="80" height="80" as="geometry" />
+    </mxCell>
+    <mxCell id="core_label" value="core container" style="text;html=1;fontSize=17;fontStyle=1;fontColor=#232F3E;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="395" y="515" width="260" height="30" as="geometry" />
+    </mxCell>
+    <mxCell id="core_detail_box" value="Nucleus + client device auth + Moquette broker&#10;+ MQTT Bridge + IP detector&#10;one JVM, one cert (lab-gg-core-01)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#EAF3DC;strokeColor=#7AA116;strokeWidth=2;fontSize=15;fontColor=#232F3E;align=center;verticalAlign=middle;" vertex="1" parent="shape_layer">
+      <mxGeometry x="285" y="555" width="480" height="100" as="geometry" />
+    </mxCell>
+
+    <mxCell id="mtls_label" value="local mTLS&#10;(10.89.40.0/24, no host-exposed port)" style="text;html=1;fontSize=15;fontColor=#3F8624;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="950" y="685" width="320" height="60" as="geometry" />
+    </mxCell>
+
+    <mxCell id="client1" value="client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232F3E;strokeWidth=1.5;fontSize=16;fontColor=#232F3E;align=center;verticalAlign=middle;" vertex="1" parent="shape_layer">
+      <mxGeometry x="60" y="770" width="150" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="client2" value="client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232F3E;strokeWidth=1.5;fontSize=16;fontColor=#232F3E;align=center;verticalAlign=middle;" vertex="1" parent="shape_layer">
+      <mxGeometry x="250" y="770" width="150" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="client3" value="client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232F3E;strokeWidth=1.5;fontSize=16;fontColor=#232F3E;align=center;verticalAlign=middle;" vertex="1" parent="shape_layer">
+      <mxGeometry x="440" y="770" width="150" height="70" as="geometry" />
+    </mxCell>
+    <mxCell id="ellipsis" value="..." style="text;html=1;fontSize=22;fontStyle=1;fontColor=#232F3E;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="600" y="785" width="80" height="40" as="geometry" />
+    </mxCell>
+    <mxCell id="client4" value="client" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#232F3E;strokeWidth=1.5;fontSize=16;fontColor=#232F3E;align=center;verticalAlign=middle;" vertex="1" parent="shape_layer">
+      <mxGeometry x="690" y="770" width="150" height="70" as="geometry" />
+    </mxCell>
+
+    <mxCell id="client_note" value="N containers, each with its own private key + cert, never shared (lab-gg-device-＜serial＞)" style="text;html=1;fontSize=15;fontColor=#666666;align=center;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="shape_layer">
+      <mxGeometry x="40" y="855" width="820" height="30" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_cloud_core" edge="1" source="cloud_label" target="core_icon" style="rounded=1;strokeWidth=2;strokeColor=#232F3E;endArrow=block;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="edge_layer">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+    <mxCell id="e_core_c1" edge="1" source="core_detail_box" target="client1" style="rounded=1;strokeWidth=2;strokeColor=#232F3E;endArrow=block;html=1;exitX=0.1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="edge_layer">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e_core_c2" edge="1" source="core_detail_box" target="client2" style="rounded=1;strokeWidth=2;strokeColor=#232F3E;endArrow=block;html=1;exitX=0.35;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="edge_layer">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e_core_c3" edge="1" source="core_detail_box" target="client3" style="rounded=1;strokeWidth=2;strokeColor=#232F3E;endArrow=block;html=1;exitX=0.6;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="edge_layer">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="e_core_c4" edge="1" source="core_detail_box" target="client4" style="rounded=1;strokeWidth=2;strokeColor=#232F3E;endArrow=block;html=1;exitX=0.9;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="edge_layer">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+
+  </root>
+</mxGraphModel>
